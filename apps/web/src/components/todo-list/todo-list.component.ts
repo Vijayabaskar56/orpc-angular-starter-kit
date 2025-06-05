@@ -104,37 +104,22 @@ import { ORPCService } from 'src/services/orpc.service';
 })
 export class TodoListComponent {
  private _orpc = inject(ORPCService);
- queryToDo = injectQuery(() => this._orpc.utils.todo.getAll.queryOptions({
-  queryFn: () => this._orpc.client.todo.getAll()
- }));
- // queryToDo = injectQuery(() => this._orpc.orpc.todo.getAll.queryOptions);
- constructor() {
-  console.log(this.queryToDo.data(), "todos");
- }
+ queryToDo = injectQuery(() => this._orpc.utils.todo.getAll.queryOptions())
  mutateToDo = injectMutation(() => this._orpc.utils.todo.create.mutationOptions({
-  mutationFn: (variables: { text: string; }) => {
-   return this._orpc.client.todo.create(variables);
-  },
   onSuccess: () => {
-   this.queryClient.invalidateQueries({ queryKey: ["todo"] });
+   this.queryClient.invalidateQueries({ queryKey: this._orpc.utils.todo.getAll.key() });
    this.todoForm.reset();
   },
  }));
  updateToDo = injectMutation(() => this._orpc.utils.todo.toggle.mutationOptions({
-  mutationFn: (variables: { id: string; completed: boolean; }) => {
-   return this._orpc.client.todo.toggle(variables);
-  },
   onSuccess: () => {
-   this.queryClient.invalidateQueries({ queryKey: ["todo"] });
+   this.queryClient.invalidateQueries({ queryKey: this._orpc.utils.todo.getAll.key() });
    this.todoForm.reset();
   },
  }));
  deleteTodo = injectMutation(() => this._orpc.utils.todo.delete.mutationOptions({
-  mutationFn: (variables: { id: string; }) => {
-   return this._orpc.client.todo.delete(variables);
-  },
   onSuccess: () => {
-   this.queryClient.invalidateQueries({ queryKey: ["todo"] });
+   this.queryClient.invalidateQueries({ queryKey: this._orpc.utils.todo.getAll.key() });
   },
  }));
 

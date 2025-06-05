@@ -40,7 +40,7 @@ export class ORPCService {
   },
  });
 
- public client: RouterClient<typeof appRouter> = createORPCClient(this.link);
+ private client: RouterClient<typeof appRouter> = createORPCClient(this.link);
  public utils = createTanstackQueryUtils(this.client);
  getQueryClient(): QueryClient {
   return this.queryClient;

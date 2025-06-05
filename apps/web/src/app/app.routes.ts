@@ -1,6 +1,5 @@
 import type { Route } from '@angular/router';
 import { HomeComponent } from '../components/home/home.component';
-import { AIChatComponent } from '../components/ai-chat/ai-chat.component';
 import { LoginComponent } from '../components/auth/login/login.component';
 import { TodoListComponent } from '../components/todo-list/todo-list.component';
 import { DashboardComponent } from '../components/dashboard/dashboard.component';
@@ -18,5 +17,4 @@ export const routes: Route[] = [
     component: DashboardComponent,
     canActivate: [authGuard]
    },
-   { path: 'ai-chat', component: AIChatComponent }
 ];

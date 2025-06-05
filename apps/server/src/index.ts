@@ -42,7 +42,7 @@ const fastify = Fastify({
   serverFactory: (fastifyHandler) => {
     const server = createServer(async (req, res) => {
       const { matched } = await handler.handle(req, res, {
-        context: await createContext(req.headers),
+        context: await createContext(req),
         prefix: "/rpc",
       });
 

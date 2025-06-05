@@ -87,15 +87,6 @@ import { injectQuery, QueryClient } from '@tanstack/angular-query-experimental';
 })
 export class HomeComponent {
  private _orpc = inject(ORPCService);
- // * This is Working fine , but here there is an additional step to pass the queryFn to the queryOptions , and also more code and dev experience is lost
- query = injectQuery(() => this._orpc.utils.healthCheck.queryOptions({
-  queryFn: () => this._orpc.client.healthCheck(),
- }));
-
- /*
-  ? But according to the docs , we can use the queryFn directly in the queryOptions , but it is not working
-  eg:
-  query = injectQuery(() => this._orpc.utils.healthCheck.queryOptions());
- */
+ query = injectQuery(() => this._orpc.utils.healthCheck.queryOptions());
 
 }
