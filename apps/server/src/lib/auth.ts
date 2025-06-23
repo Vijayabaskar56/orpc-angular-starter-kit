@@ -7,7 +7,7 @@ import { client } from "../db";
 export const auth = betterAuth({
     database: mongodbAdapter(client),
     trustedOrigins: [
-        process.env.CORS_ORIGIN || "",
+        process.env.CORS_ORIGIN || "http://localhost:3001/",
     ],
     emailAndPassword: {
         enabled: true,

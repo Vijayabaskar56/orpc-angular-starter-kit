@@ -16,7 +16,7 @@ import { google } from "@ai-sdk/google";
 import { auth } from "./lib/auth";
 
 const baseCorsConfig = {
-  origin: process.env.CORS_ORIGIN || "",
+  origin: process.env.CORS_ORIGIN || "http://localhost:3001/",
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: [
     "Content-Type",
@@ -30,7 +30,7 @@ const baseCorsConfig = {
 const handler = new RPCHandler(appRouter, {
   plugins: [
     new CORSPlugin({
-      origin: process.env.CORS_ORIGIN,
+      origin: process.env.CORS_ORIGIN || "http://localhost:3001/",
       credentials: true,
       allowHeaders: ["Content-Type", "Authorization"],
     }),
