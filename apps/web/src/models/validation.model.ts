@@ -9,11 +9,11 @@ const signUpSchema = z
 const loginSchema = z.object({
  email: z.string().email("Invalid email address"),
  password: z.string().min(1, "Password is required"),
- rememberMe: z.boolean(),
+ rememberMe: z.boolean().default(false),
 });
 
 const todoSchema = z.object({
- todo: z.string().nonempty("Todo is required"),
+ todo: z.string().min(1, "Todo is required").default("Test"),
 });
 export {
  signUpSchema,

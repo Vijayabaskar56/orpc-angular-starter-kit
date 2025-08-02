@@ -1,10 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
-import { injectForm, injectStore, TanStackField } from '@tanstack/angular-form';
-import { signUpSchema } from '../../../models/validation.model';
+import { RouterLink } from '@angular/router';
+import { TanStackField } from '@tanstack/angular-form';
+import { SignUpSchema, signUpSchema } from '../../../models/validation.model';
 import { AuthService } from 'src/services/auth.service';
+import { FormService } from 'src/services/form.service';
 
 @Component({
  selector: 'app-signup',
@@ -17,8 +18,8 @@ import { AuthService } from 'src/services/auth.service';
           <h2 class="text-2xl font-bold mb-1">Create Account</h2>
           <p class="text-gray-600 dark:text-gray-400 mb-6">Join us! Create your account to get started.</p>
 
-          <form (ngSubmit)="signUpForm.handleSubmit()" class="space-y-4">
-          <ng-container [tanstackField]="signUpForm" name="name" #name="field">
+          <form (ngSubmit)="form.handleSubmit()" class="space-y-4">
+          <ng-container [tanstackField]="form" name="name" #name="field">
             <div>
               <label [for]="name.api.name">
                 Name
@@ -40,7 +41,7 @@ import { AuthService } from 'src/services/auth.service';
               }
             </div>
           </ng-container>
-            <ng-container [tanstackField]="signUpForm" name="email" #email="field">
+            <ng-container [tanstackField]="form" name="email" #email="field">
               <div>
                 <label [for]="email.api.name">
                   Email
@@ -62,7 +63,7 @@ import { AuthService } from 'src/services/auth.service';
               }
             </div>
           </ng-container>
-            <ng-container [tanstackField]="signUpForm" name="password" #password="field">
+            <ng-container [tanstackField]="form" name="password" #password="field">
               <div>
                 <label [for]="password.api.name">
                 Password
@@ -105,21 +106,23 @@ import { AuthService } from 'src/services/auth.service';
   `
 })
 export class SignupComponent {
- #router = inject(Router);
  private authService = inject(AuthService);
- signUpForm = injectForm({
-  defaultValues: {
-   email: "",
-   password: "",
-   name: "",
-  },
-  validators: {
-   onChange: signUpSchema,
-  },
-  onSubmit: async (values) => {
-   this.authService.signUp(values.value.email, values.value.password);
-  },
+ public formService = inject(FormService);
+
+ onSubmit = (values: SignUpSchema) => {
+  this.authService.signUp(values.email, values.password);
+ }
+
+ // Clean destructuring approach
+ private formResult = this.formService.injectZodForm<typeof signUpSchema, SignUpSchema>(signUpSchema, this.onSubmit, {
+  email: "",
+  password: "",
+  name: "",
  });
- canSubmit = injectStore(this.signUpForm, (state) => state.canSubmit);
- isSubmitting = injectStore(this.signUpForm, (state) => state.isSubmitting);
+
+ // Destructure the properties
+ form = this.formResult.form;
+ canSubmit = this.formResult.canSubmit;
+ isSubmitting = this.formResult.isSubmitting;
+
 }

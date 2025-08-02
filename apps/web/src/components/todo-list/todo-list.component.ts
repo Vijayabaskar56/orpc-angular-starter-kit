@@ -1,10 +1,12 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { injectForm, injectStore, TanStackField } from '@tanstack/angular-form';
+import { TanStackField } from '@tanstack/angular-form';
+
 import { injectMutation, injectQuery, QueryClient } from '@tanstack/angular-query-experimental';
-import { todoSchema } from '../../models/validation.model';
+import { FormService } from 'src/services/form.service';
 import { ORPCService } from 'src/services/orpc.service';
+import { TodoSchema, todoSchema } from '../../models/validation.model';
 @Component({
  selector: 'app-todo-list',
  standalone: true,
@@ -104,6 +106,10 @@ import { ORPCService } from 'src/services/orpc.service';
 })
 export class TodoListComponent {
  private _orpc = inject(ORPCService);
+ public formService = inject(FormService);
+ onSubmit = (values: TodoSchema) => {
+  this.mutateToDo.mutate({ text: values.todo });
+ }
  queryToDo = injectQuery(() => this._orpc.utils.todo.getAll.queryOptions())
  mutateToDo = injectMutation(() => this._orpc.utils.todo.create.mutationOptions({
   onSuccess: () => {
@@ -124,18 +130,13 @@ export class TodoListComponent {
  }));
 
  queryClient = inject(QueryClient);
- todoForm = injectForm({
-  defaultValues: {
-   todo: "",
-  },
-  validators: {
-   onChange: todoSchema,
-  },
-  onSubmit: async ({ value }) => {
-   this.mutateToDo.mutate({ text: value.todo });
-  },
+
+ private formResult = this.formService.injectZodForm(todoSchema, this.onSubmit, {
+  todo: "",
  });
- canSubmit = injectStore(this.todoForm, (state) => state.canSubmit);
- isSubmitting = injectStore(this.todoForm, (state) => state.isSubmitting);
+
+ todoForm = this.formResult.form;
+ canSubmit = this.formResult.canSubmit;
+ isSubmitting = this.formResult.isSubmitting;
 
 }

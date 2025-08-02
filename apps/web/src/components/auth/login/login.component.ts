@@ -1,10 +1,11 @@
-import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
+import { TanStackField } from '@tanstack/angular-form';
+import { FormService } from 'src/services/form.service';
+import { LoginSchema, loginSchema } from '../../../models/validation.model';
 import { AuthService } from '../../../services/auth.service';
-import { injectForm, injectStore, TanStackField } from '@tanstack/angular-form';
-import { loginSchema } from '../../../models/validation.model';
 
 @Component({
  selector: 'app-login',
@@ -17,8 +18,8 @@ import { loginSchema } from '../../../models/validation.model';
           <h2 class="text-2xl font-bold mb-1">Sign In</h2>
           <p class="text-gray-600 dark:text-gray-400 mb-6">Welcome back! Please sign in to continue.</p>
 
-          <form (ngSubmit)="logInForm.handleSubmit()" class="space-y-4">
-          <ng-container [tanstackField]="logInForm" name="email" #email="field">
+          <form (ngSubmit)="form.handleSubmit()" class="space-y-4">
+          <ng-container [tanstackField]="form" name="email" #email="field">
            <div>
 
             <label class="label" [for]="email.api.name">
@@ -41,7 +42,7 @@ import { loginSchema } from '../../../models/validation.model';
           </div>
           </ng-container>
 
-          <ng-container [tanstackField]="logInForm" name="password" #password="field">
+          <ng-container [tanstackField]="form" name="password" #password="field">
             <div>
               <label [for]="password.api.name">
                 <span class="label-text">Password</span>
@@ -85,20 +86,24 @@ import { loginSchema } from '../../../models/validation.model';
 export class LoginComponent {
  email = '';
  password = '';
+
  private authService = inject(AuthService);
- logInForm = injectForm({
-  defaultValues: {
-   email: "",
-   password: "",
-   rememberMe: false,
-  },
-  validators: {
-   onChange: loginSchema,
-  },
-  onSubmit: async (values) => {
-   this.authService.login(values.value.email, values.value.password);
-  },
+ public formService = inject(FormService);
+
+ onSubmit = async (values: LoginSchema) => {
+  this.authService.login(values.email, values.password);
+ }
+
+ // Clean destructuring approach
+ private formResult = this.formService.injectZodForm<typeof loginSchema, LoginSchema>(loginSchema, this.onSubmit, {
+  email: "",
+  password: "",
+  rememberMe: false,
  });
- canSubmit = injectStore(this.logInForm, (state) => state.canSubmit);
- isSubmitting = injectStore(this.logInForm, (state) => state.isSubmitting);
+
+ // Destructure the properties
+ form = this.formResult.form;
+ canSubmit = this.formResult.canSubmit;
+ isSubmitting = this.formResult.isSubmitting;
+
 }
